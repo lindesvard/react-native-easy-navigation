@@ -1,17 +1,29 @@
-import React from "react";
-import { Text, View, Button } from "react-native";
-
-import { useNavigation } from "../src";
+import React, { memo } from "react";
+import { Text, View, Button, TextInput } from "react-native";
+import { useRouter, Screen } from "../src";
 
 const ExampleHalfPanel = props => {
-  const { pop } = useNavigation();
+  console.log("re-render ExampleHalfPanel");
+  const { navigateToModal, pop } = useRouter();
 
   return (
-    <View style={{ height: 350, width: "100%" }}>
+    <Screen title="Half panel">
       <Text>This is a half panel</Text>
+      {[...Array(8)].map(() => (
+        <View
+          style={{
+            height: 100,
+            width: "100%",
+            backgroundColor: "red",
+            marginBottom: 10
+          }}
+        />
+      ))}
+      <Button onPress={navigateToModal} title="Go to modal" />
+      <TextInput style={{ height: 50, width: 300, borderWidth: 1 }} />
       <Button title="Close" onPress={pop} />
-    </View>
+    </Screen>
   );
 };
 
-export default ExampleHalfPanel;
+export default memo(ExampleHalfPanel);

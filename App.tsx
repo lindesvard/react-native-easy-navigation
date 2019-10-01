@@ -56,7 +56,6 @@ const router = {
   navigateToModal: {
     name: "ExampleModal",
     mode: "modal",
-    header: null,
     statusBar: {
       barStyle: "dark-content"
     }

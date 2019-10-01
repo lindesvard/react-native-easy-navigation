@@ -1,16 +1,17 @@
-import React from "react";
+import React, { memo } from "react";
 import { Button } from "react-native";
 
-import { useNavigation, Screen } from "../src";
+import { useRouter, Screen } from "../src";
 
 const ExampleStack = ({ customTitle }) => {
-  const navigation = useNavigation();
+  console.log("re-render ExampleStack");
+  const { push } = useRouter();
   return (
     <Screen title={customTitle || "No title provided"}>
       <Button
         title="Push one more route"
         onPress={() =>
-          navigation.push("ExampleStack", {
+          push("ExampleStack", {
             header: {
               backgroundColor: "green",
               color: "white"
@@ -25,4 +26,4 @@ const ExampleStack = ({ customTitle }) => {
   );
 };
 
-export default ExampleStack;
+export default memo(ExampleStack);

@@ -1,10 +1,28 @@
 import React from "react";
 import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
-import useNavigation from "./hooks/useNavigation";
+import useRouter from "./hooks/useRouter";
+import useScreen from "./hooks/useScreen";
+
+interface BadgeProps {
+  number: number;
+  color: string;
+  backgroundColor: string;
+}
+
+interface TabsProps {
+  children: React.ReactNode;
+}
+
+interface ItemProps {
+  route: string;
+  label: Function;
+  icon: Function;
+  badge: Function;
+}
 
 const styles = StyleSheet.create({
   tabs: {
-    ...StyleSheet.absoluteFill,
+    ...(StyleSheet.absoluteFill as object),
     top: undefined,
     paddingBottom: 44,
     backgroundColor: "#fff",
@@ -46,13 +64,15 @@ const styles = StyleSheet.create({
   }
 });
 
-const Tabs = ({ children }) => {
+const Tabs = ({ children }: TabsProps) => {
   return <View style={styles.tabs}>{children}</View>;
 };
 
-const Item = ({ route, label, icon, badge }) => {
-  const { current, replace } = useNavigation();
-  const active = route === (current && current.name);
+const Item = ({ route, label, icon, badge }: ItemProps) => {
+  const { replace } = useRouter();
+  const { screen } = useScreen();
+
+  const active = route === (screen && screen.name);
 
   return (
     <TouchableOpacity onPress={() => replace(route)} style={styles.touchable}>
@@ -65,7 +85,11 @@ const Item = ({ route, label, icon, badge }) => {
   );
 };
 
-const Badge = ({ number, color = "#fff", backgroundColor = "#007aff" }) => {
+const Badge = ({
+  number,
+  color = "#fff",
+  backgroundColor = "#007aff"
+}: BadgeProps) => {
   if (!number) {
     return null;
   }

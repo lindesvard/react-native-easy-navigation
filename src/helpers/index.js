@@ -1,1 +1,2 @@
-export { default as deepMerge } from "./deepMerge";
+export * from "./ramda";
+export * from "./screen";

@@ -1,9 +1,10 @@
-import React from "react";
+import React, { memo } from "react";
 import { Text } from "react-native";
 
 import { Screen } from "../src";
 
 const Gallery = props => {
+  console.log("re-render Gallery");
   return (
     <Screen title="Gallery">
       <Text>My gallery</Text>
@@ -11,4 +12,4 @@ const Gallery = props => {
   );
 };
 
-export default Gallery;
+export default memo(Gallery);

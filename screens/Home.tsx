@@ -1,16 +1,16 @@
-import React from "react";
+import React, { memo } from "react";
 import { Button } from "react-native";
 
-import { useNavigation, Screen } from "../src";
+import { useRouter, Screen } from "../src";
 
 const Home = props => {
-  const navigation = useNavigation();
+  const { push, navigateToModal } = useRouter();
   return (
     <Screen title="Home">
       <Button
         title="Push route"
         onPress={() =>
-          navigation.push("ExampleStack", {
+          push("ExampleStack", {
             props: {
               customTitle: "Hello world"
             }
@@ -20,7 +20,7 @@ const Home = props => {
       <Button
         title="Push route (no animation)"
         onPress={() =>
-          navigation.push("ExampleStack", {
+          push("ExampleStack", {
             props: {
               customTitle: "Hello world"
             },
@@ -28,15 +28,13 @@ const Home = props => {
           })
         }
       />
-      <Button title="Open modal" onPress={navigation.navigateToModal} />
+      <Button title="Open modal" onPress={navigateToModal} />
       <Button
         title="Open half panel"
-        onPress={() =>
-          navigation.push("ExampleHalfPanel", { mode: "half-panel" })
-        }
+        onPress={() => push("ExampleHalfPanel", { mode: "half-panel" })}
       />
     </Screen>
   );
 };
 
-export default Home;
+export default memo(Home);

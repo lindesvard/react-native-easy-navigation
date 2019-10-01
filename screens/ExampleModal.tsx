@@ -1,18 +1,19 @@
-import React from "react";
+import React, { memo } from "react";
 import { View, Button } from "react-native";
 
-import { useNavigation } from "../src";
+import { useRouter, Screen } from "../src";
 
 const ExampleModal = props => {
-  const navigation = useNavigation();
+  console.log("re-render ExampleModal");
+  const { navigateToModal, pop, push } = useRouter();
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Button title="One more modal?" onPress={navigation.navigateToModal} />
-      <Button title="Close modal?" onPress={navigation.pop} />
+    <Screen title="Modal">
+      <Button title="One more modal?" onPress={navigateToModal} />
+      <Button title="Close modal?" onPress={pop} />
       <Button
         title="Push route"
         onPress={() =>
-          navigation.push("ExampleStack", {
+          push("ExampleStack", {
             header: {
               backgroundColor: "blue",
               color: "white"
@@ -23,8 +24,8 @@ const ExampleModal = props => {
           })
         }
       />
-    </View>
+    </Screen>
   );
 };
 
-export default ExampleModal;
+export default memo(ExampleModal);

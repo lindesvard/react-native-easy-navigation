@@ -1,9 +1,10 @@
-import React from "react";
+import React, { memo } from "react";
 import { Text } from "react-native";
 
 import { Screen } from "../src";
 
 const Profile = props => {
+  console.log("re-render Profile");
   return (
     <Screen title="Profile">
       <Text>Profile</Text>
@@ -11,4 +12,4 @@ const Profile = props => {
   );
 };
 
-export default Profile;
+export default memo(Profile);

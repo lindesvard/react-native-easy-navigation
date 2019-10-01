@@ -1,4 +1,4 @@
-function mergeDeep(target, source) {
+export const mergeDeep = (target, source) => {
   const merged = { ...target };
   const isObject = obj => obj && typeof obj === "object";
 
@@ -20,6 +20,12 @@ function mergeDeep(target, source) {
   });
 
   return merged;
-}
+};
 
-export default mergeDeep;
+export const last = list => {
+  if (!list || list.length === 0) {
+    return null;
+  }
+
+  return list.slice(list.length - 1)[0];
+};

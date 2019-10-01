@@ -1,7 +1,15 @@
 import React, { useMemo } from "react";
-import { View, StyleSheet, Dimensions } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
 import Animated, { Easing } from "react-native-reanimated";
 import { timing } from "react-native-redash";
+import BottomSheet from "./Components/BottomSheet";
+import {
+  Mode,
+  hasYTransition,
+  hasXTransition,
+  getModeBackground
+} from "./helpers";
+import { TRANSITION_DURATION } from "./constants";
 
 const {
   useCode,
@@ -17,18 +25,11 @@ const {
   and
 } = Animated;
 
-export enum Mode {
-  Modal = "modal",
-  HalfPanel = "half-panel",
-  Replace = "replace",
-  Initial = "initial",
-  Push = "push"
-}
-
 interface TransitionProps {
   children: React.ReactNode;
   mounted: boolean;
   onUnmount: Function;
+  pop: Function;
   mode: Mode;
   animated: boolean;
 }
@@ -38,10 +39,11 @@ const Transition = ({
   mounted,
   onUnmount,
   mode,
-  animated
+  animated,
+  pop
 }: TransitionProps) => {
-  const animateY = animated && (mode === "modal" || mode === "half-panel");
-  const animateX = animated && !animateY;
+  const animateY = animated && hasYTransition(mode);
+  const animateX = animated && hasXTransition(mode);
 
   const { width, height } = Dimensions.get("window");
   const { animation, clock } = useMemo(
@@ -81,7 +83,7 @@ const Transition = ({
           clock,
           from: animation,
           to: mounted ? 1 : 0,
-          duration: animated ? 200 : 0,
+          duration: animated ? TRANSITION_DURATION : 0,
           easing: Easing.inOut(Easing.ease)
         })
       ),
@@ -89,15 +91,6 @@ const Transition = ({
     ]),
     [mounted]
   );
-
-  const getBackground = mode => {
-    switch (mode) {
-      case "half-panel":
-        return "transparent";
-      default:
-        return "#fff";
-    }
-  };
 
   const isHalfPanel = mode === "half-panel";
 
@@ -109,27 +102,16 @@ const Transition = ({
       <Animated.View
         style={{
           ...StyleSheet.absoluteFill,
-          backgroundColor: getBackground(mode),
+          backgroundColor: getModeBackground(mode),
           transform: [{ translateX }, { translateY }]
         }}
       >
         {isHalfPanel ? (
-          <View
-            style={{
-              flex: 1,
-              justifyContent: "flex-end"
-            }}
-          >
-            <View
-              style={{
-                backgroundColor: "#fff",
-                borderTopLeftRadius: 20,
-                borderTopRightRadius: 20
-              }}
-            >
-              {children}
-            </View>
-          </View>
+          <BottomSheet
+            distanceFromTop={150}
+            onClose={pop}
+            scenes={[{ key: "only", children }]}
+          />
         ) : (
           children
         )}
