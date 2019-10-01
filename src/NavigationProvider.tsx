@@ -3,6 +3,7 @@ import { StatusBar } from "react-native";
 import ScreenProvider from "./ScreenProvider";
 import ScreenTransition from "./ScreenTransition";
 import { mergeDeep, last, Mode } from "./helpers";
+import { isDrawer } from "./helpers/screen";
 
 export const NavigationContext = React.createContext({});
 
@@ -66,20 +67,33 @@ const mergeWithDefaults = (route: object, params: object) => ({
 const initialState = {
   stacks: [],
   wizard: [],
-  pops: []
+  pops: [],
+  leftDrawer: false,
+  rightDrawer: false
 };
 
 const reducer = (state: ReducerState, action: ReducerAction) => {
   const { stacks, pops } = state;
 
-  console.log(action.type, action); // eslint-disable-line
+  // console.log(action.type, action); // eslint-disable-line
 
   switch (action.type) {
     case "push":
+      // add drawer to pops
+      // if a new push incoming
+      if (isDrawer(last(stacks).mode)) {
+        return {
+          ...state,
+          stacks: [...stacks, action.route],
+          pops: [...pops, last(stacks)]
+        };
+      }
+
       return {
         ...state,
         stacks: [...stacks, action.route]
       };
+
     case "replace":
       return {
         ...state,
@@ -110,8 +124,6 @@ const isRouteMounted = (state: ReducerState, route: RouteInterface) =>
   !state.pops.find(({ id }) => id === route.id);
 const getCurrentRoute = (state: ReducerState) =>
   state.stacks.slice(state.stacks.length - 1)[0];
-const getDepth = (state: ReducerState) =>
-  state.stacks.length - state.pops.length;
 const getStacks = (state: ReducerState) => state.stacks;
 
 const Provider = ({ initial, routes, router, renderTabs }: ProviderProps) => {
@@ -159,7 +171,6 @@ const Provider = ({ initial, routes, router, renderTabs }: ProviderProps) => {
   }, []); // eslint-disable-line
 
   const current = getCurrentRoute(state);
-  const depth = getDepth(state);
   const stacks = getStacks(state);
   const context = useMemo(
     () => ({
@@ -205,7 +216,7 @@ const Provider = ({ initial, routes, router, renderTabs }: ProviderProps) => {
             key={id}
             value={{
               screen: stack,
-              showBackButton: depth !== 1
+              showBackButton: index !== 0
             }}
           >
             {showStatusBar && <StatusBar {...statusBar} />}
@@ -219,7 +230,7 @@ const Provider = ({ initial, routes, router, renderTabs }: ProviderProps) => {
               animated={animated}
             >
               <Component {...props} />
-              {renderTabs(stack)}
+              {renderTabs(stack, context)}
             </ScreenTransition>
           </ScreenProvider>
         );

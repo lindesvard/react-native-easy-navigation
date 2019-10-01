@@ -18,6 +18,7 @@ interface ItemProps {
   label: Function;
   icon: Function;
   badge: Function;
+  onPress: Function;
 }
 
 const styles = StyleSheet.create({
@@ -68,14 +69,17 @@ const Tabs = ({ children }: TabsProps) => {
   return <View style={styles.tabs}>{children}</View>;
 };
 
-const Item = ({ route, label, icon, badge }: ItemProps) => {
-  const { replace } = useRouter();
+const Item = ({ route, label, icon, badge, onPress }: ItemProps) => {
+  const router = useRouter();
   const { screen } = useScreen();
 
   const active = route === (screen && screen.name);
 
   return (
-    <TouchableOpacity onPress={() => replace(route)} style={styles.touchable}>
+    <TouchableOpacity
+      onPress={() => (onPress ? onPress(router) : router.replace(route))}
+      style={styles.touchable}
+    >
       <View style={styles.icon}>
         {icon(active)}
         {badge && <View style={styles.badgeHolder}>{badge()}</View>}

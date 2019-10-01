@@ -1,13 +1,15 @@
 import React, { useMemo } from "react";
-import { StyleSheet, Dimensions } from "react-native";
+import { StyleSheet, Dimensions, TouchableWithoutFeedback } from "react-native";
 import Animated, { Easing } from "react-native-reanimated";
 import { timing } from "react-native-redash";
 import BottomSheet from "./Components/BottomSheet";
 import {
   Mode,
+  isDrawer,
   hasYTransition,
   hasXTransition,
-  getModeBackground
+  getModeBackground,
+  isHalfPanel
 } from "./helpers";
 import { TRANSITION_DURATION } from "./constants";
 
@@ -34,6 +36,26 @@ interface TransitionProps {
   animated: boolean;
 }
 
+const { width, height } = Dimensions.get("window");
+
+const getXOutputRange = mode => {
+  switch (mode) {
+    case "drawer":
+      return [-width, 0];
+    default:
+      return [width, 0];
+  }
+};
+
+const getContainerWidth = mode => {
+  switch (mode) {
+    case "drawer":
+      return width - 100;
+    default:
+      return width;
+  }
+};
+
 const Transition = ({
   children,
   mounted,
@@ -44,8 +66,8 @@ const Transition = ({
 }: TransitionProps) => {
   const animateY = animated && hasYTransition(mode);
   const animateX = animated && hasXTransition(mode);
+  const drawer = isDrawer(mode);
 
-  const { width, height } = Dimensions.get("window");
   const { animation, clock } = useMemo(
     () => ({
       animation: new Value(0),
@@ -57,7 +79,7 @@ const Transition = ({
   const translateX = animateX
     ? interpolate(animation, {
         inputRange: [0, 1],
-        outputRange: [width, 0]
+        outputRange: getXOutputRange(mode)
       })
     : 0;
 
@@ -92,21 +114,26 @@ const Transition = ({
     [mounted]
   );
 
-  const isHalfPanel = mode === "half-panel";
-
   return (
     <Animated.View style={{ ...StyleSheet.absoluteFill }}>
-      <Animated.View
-        style={{ ...StyleSheet.absoluteFill, backgroundColor: "#000", opacity }}
-      />
+      <TouchableWithoutFeedback onPress={drawer ? pop : () => {}}>
+        <Animated.View
+          style={{
+            ...StyleSheet.absoluteFill,
+            backgroundColor: "#000",
+            opacity
+          }}
+        />
+      </TouchableWithoutFeedback>
       <Animated.View
         style={{
           ...StyleSheet.absoluteFill,
+          width: getContainerWidth(mode),
           backgroundColor: getModeBackground(mode),
           transform: [{ translateX }, { translateY }]
         }}
       >
-        {isHalfPanel ? (
+        {isHalfPanel(mode) ? (
           <BottomSheet
             distanceFromTop={150}
             onClose={pop}

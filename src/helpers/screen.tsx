@@ -3,9 +3,12 @@ export enum Mode {
   HalfPanel = "half-panel",
   Replace = "replace",
   Initial = "initial",
-  Push = "push"
+  Push = "push",
+  Overlay = "overlay",
+  Drawer = "drawer"
 }
 export const isModal = (mode: Mode) => mode === Mode.Modal;
+export const isDrawer = (mode: Mode) => mode === Mode.Drawer;
 export const isHalfPanel = (mode: Mode) => mode === Mode.HalfPanel;
 export const isPush = (mode: Mode) => mode === Mode.Push;
 export const hasYTransition = (mode: Mode) =>
@@ -14,6 +17,8 @@ export const hasXTransition = (mode: Mode) => !hasYTransition(mode);
 export const getModeBackground = (mode: Mode) => {
   switch (mode) {
     case "half-panel":
+    case "overlay":
+    case "drawer":
       return "transparent";
     default:
       return "#fff";

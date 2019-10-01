@@ -4,6 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 
 import { NavigationProvider, Tabs } from "./src";
 
+import LeftDrawer from "./screens/LeftDrawer";
 import Home from "./screens/Home";
 import Gallery from "./screens/Gallery";
 import Profile from "./screens/Profile";
@@ -25,6 +26,9 @@ const routes = {
   ExampleHalfPanel: { Component: ExampleHalfPanel },
   ExampleStack: {
     Component: ExampleStack
+  },
+  LeftDrawer: {
+    Component: LeftDrawer
   }
 };
 
@@ -59,27 +63,36 @@ const router = {
     statusBar: {
       barStyle: "dark-content"
     }
+  },
+  navigateToExampleStack: {
+    name: "ExampleModal"
   }
 };
 
 const tabs = [
   {
     route: "Home",
-    icon: "ios-car",
     label: "Home",
+    icon: "ios-car",
     badge: null
   },
   {
     route: "Gallery",
-    icon: "ios-images",
     label: "Gallery",
+    icon: "ios-images",
     badge: 0
   },
   {
     route: "Profile",
-    icon: "ios-contact",
     label: "Profile",
+    icon: "ios-contact",
     badge: 3
+  },
+  {
+    route: "More",
+    label: "More",
+    icon: "ios-more",
+    onPress: router => router.push("LeftDrawer", { mode: "drawer" })
   }
 ];
 
@@ -96,10 +109,11 @@ export default () => {
 
         return (
           <Tabs>
-            {tabs.map(({ route, label, icon, badge }) => (
+            {tabs.map(({ route, label, icon, badge, onPress }) => (
               <Tabs.Item
                 key={route}
                 route={route}
+                onPress={onPress}
                 icon={active => (
                   <Ionicons
                     name={icon}

@@ -24,7 +24,7 @@ export const mergeDeep = (target, source) => {
 
 export const last = list => {
   if (!list || list.length === 0) {
-    return null;
+    return {};
   }
 
   return list.slice(list.length - 1)[0];
