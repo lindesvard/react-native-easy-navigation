@@ -1,68 +1,69 @@
-import React from "react";
-import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
-import useRouter from "./hooks/useRouter";
-import useScreen from "./hooks/useScreen";
+import React from 'react';
+import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import useRouter from './hooks/useRouter';
+import useScreen from './hooks/useScreen';
+import { RouterType } from './types';
 
-interface BadgeProps {
-  number: number;
-  color: string;
-  backgroundColor: string;
-}
+type BadgeProps = {
+  number?: number | undefined | null;
+  color?: string;
+  backgroundColor?: string;
+};
 
-interface TabsProps {
+type TabsProps = {
   children: React.ReactNode;
-}
+};
 
-interface ItemProps {
+type ItemProps = {
   route: string;
-  label: Function;
-  icon: Function;
-  badge: Function;
-  onPress: Function;
-}
+  label: (active: boolean) => React.ReactNode;
+  icon: (active: boolean) => React.ReactNode;
+  badge: () => React.ReactNode;
+  onPress: undefined | ((router: RouterType) => void);
+};
 
 const styles = StyleSheet.create({
   tabs: {
     ...(StyleSheet.absoluteFill as object),
     top: undefined,
     paddingBottom: 44,
-    backgroundColor: "#fff",
-    flexDirection: "row",
-    justifyContent: "center",
-    paddingTop: 10
+    backgroundColor: '#fff',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingTop: 10,
   },
   touchable: {
-    alignContent: "center",
-    justifyContent: "center",
-    paddingHorizontal: 20
+    alignContent: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
   },
   icon: {
     height: 40,
     width: 40,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center"
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   label: {
     marginTop: 3,
-    alignItems: "center"
+    alignItems: 'center',
   },
   badgeHolder: {
     zIndex: 2,
-    position: "absolute",
+    position: 'absolute',
     top: -5,
-    right: -5
+    right: -5,
   },
   badge: {
     width: 20,
     height: 20,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 10
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
   },
   badgeText: {
-    fontSize: 10
-  }
+    fontSize: 10,
+  },
 });
 
 const Tabs = ({ children }: TabsProps) => {
@@ -90,9 +91,9 @@ const Item = ({ route, label, icon, badge, onPress }: ItemProps) => {
 };
 
 const Badge = ({
-  number,
-  color = "#fff",
-  backgroundColor = "#007aff"
+  number = 0,
+  color = '#fff',
+  backgroundColor = '#007aff',
 }: BadgeProps) => {
   if (!number) {
     return null;

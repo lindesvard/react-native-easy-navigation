@@ -1,8 +1,13 @@
-import React from "react";
+import React from 'react';
 
 export const ScreenContext = React.createContext({});
 
-const ScreenProvider = ({ children, value }) => {
+type Props = {
+  children: React.ReactNode;
+  value: object;
+};
+
+const ScreenProvider = ({ children, value }: Props) => {
   return (
     <ScreenContext.Provider value={value}>{children}</ScreenContext.Provider>
   );

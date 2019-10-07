@@ -1,16 +1,12 @@
-import { useContext, useMemo } from "react";
-import { NavigationContext } from "../NavigationProvider";
+import { useContext, useMemo } from 'react';
+import { NavigationContext } from '../NavigationProvider';
+import { RouterType } from '../types';
 
-interface NavigationContextReturn {
-  pop: Function;
-  push: Function;
-  replace: Function;
-  reset: Function;
-}
+const useRouter = (): RouterType => {
+  const navigation = useContext(NavigationContext) as RouterType;
 
-const useRouter = (): NavigationContextReturn => {
-  const navigation = useContext(NavigationContext) as NavigationContextReturn;
-  return useMemo(() => navigation, []); // eslint-disable-line
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  return useMemo(() => navigation, []);
 };
 
 export default useRouter;

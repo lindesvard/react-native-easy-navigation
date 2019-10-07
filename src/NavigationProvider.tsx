@@ -1,174 +1,180 @@
-import React, { useMemo, useEffect, useCallback, useReducer } from "react";
-import { StatusBar } from "react-native";
-import ScreenProvider from "./ScreenProvider";
-import ScreenTransition from "./ScreenTransition";
-import { mergeDeep, last, Mode } from "./helpers";
-import { isDrawer } from "./helpers/screen";
+import React, { useMemo, useEffect, useCallback, useReducer } from 'react';
+import { StatusBar } from 'react-native';
+import ScreenProvider from './ScreenProvider';
+import ScreenTransition from './ScreenTransition';
+import { mergeDeep, last } from './helpers';
+import { isDrawer } from './helpers/screen';
+import {
+  RouteType,
+  RouteOptionsType,
+  LoseObjectType,
+  RouterType,
+} from './types';
 
 export const NavigationContext = React.createContext({});
 
-interface StatusBarInterface {
-  barStyle: string;
-}
-
-interface HeaderInterface {
-  backgroundColor: string;
-  color: string;
-}
-
-interface ProviderProps {
+type Props = {
   initial: string;
-  routes: object;
-  router: object;
-  children: any; // eslint-disable-line
-  renderTabs: Function;
-}
+  routes: { [key: string]: RouteOptionsType & { Component: any } };
+  router: { [key: string]: RouteOptionsType & { name: string } };
+  renderTabs: (route: RouteType, router: RouterType) => React.ReactNode | null;
+};
 
-interface ReducerState {
-  stacks: object[];
-  wizard: object[];
-  pops: object[];
-}
+type ReducerState = {
+  stacks: RouteType[];
+  wizard: RouteType[];
+  pops: RouteType[];
+  leftDrawer: true | false;
+  rightDrawer: true | false;
+};
 
-interface ReducerAction {
-  type: string;
-  route?: object;
-}
+type ReducerAction =
+  | { type: 'pop' }
+  | {
+      type: 'push' | 'replace' | 'pop' | 'pop_done' | 'reset';
+      route: RouteType;
+    };
 
-interface RouteInterface {
-  name: string;
-  props: object;
-  id: number;
-  mode: Mode;
-  animated: boolean;
-  statusBar: StatusBarInterface;
-  header: HeaderInterface;
-}
-
-const mergeWithDefaults = (route: object, params: object) => ({
-  ...mergeDeep(
-    {
-      name: null,
-      props: {},
-      id: Math.ceil(Math.random() * 99999999),
-      mode: "push",
-      animated: true,
-      statusBar: { barStyle: "light-content" },
-      header: {
-        backgroundColor: "#222",
-        color: "#fff"
-      }
+const createRoute = (route: RouteOptionsType, overrides?: RouteOptionsType) => {
+  const merged = {
+    name: null,
+    props: {},
+    id: Math.ceil(Math.random() * 99999999),
+    mode: 'push',
+    animated: true,
+    ...route,
+    statusBar: {
+      barStyle: 'light-content',
+      ...route.statusBar,
     },
-    route
-  ),
-  ...params
-});
+    header: {
+      backgroundColor: '#222',
+      color: '#fff',
+      ...route.header,
+    },
+  };
+
+  return mergeDeep(merged, overrides) as RouteType;
+};
 
 const initialState = {
   stacks: [],
   wizard: [],
   pops: [],
   leftDrawer: false,
-  rightDrawer: false
+  rightDrawer: false,
 };
 
-const reducer = (state: ReducerState, action: ReducerAction) => {
+const reducer = (state: ReducerState, action: ReducerAction): ReducerState => {
   const { stacks, pops } = state;
 
   // console.log(action.type, action); // eslint-disable-line
 
   switch (action.type) {
-    case "push":
+    case 'push':
       // add drawer to pops
       // if a new push incoming
       if (isDrawer(last(stacks).mode)) {
         return {
           ...state,
           stacks: [...stacks, action.route],
-          pops: [...pops, last(stacks)]
+          pops: [...pops, last(stacks)],
         };
       }
 
       return {
         ...state,
-        stacks: [...stacks, action.route]
+        stacks: [...stacks, action.route],
       };
 
-    case "replace":
+    case 'replace':
       return {
         ...state,
-        stacks: [...stacks.slice(0, stacks.length - 1), action.route]
+        stacks: [...stacks.slice(0, stacks.length - 1), action.route],
       };
-    case "pop":
+    case 'pop':
       return {
         ...state,
-        pops: [...pops, last(stacks)]
+        pops: [...pops, last(stacks)],
       };
-    case "pop_done":
+    case 'pop_done':
       return {
         ...state,
         stacks: stacks.filter(route => route.id !== action.route.id),
-        pops: pops.filter(route => route.id !== action.route.id)
+        pops: pops.filter(route => route.id !== action.route.id),
       };
-    case "reset":
+    case 'reset':
       return {
         ...initialState,
-        stacks: [action.route]
+        stacks: [action.route],
       };
     default:
       return state;
   }
 };
 
-const isRouteMounted = (state: ReducerState, route: RouteInterface) =>
+const isRouteMounted = (state: ReducerState, route: RouteType) =>
   !state.pops.find(({ id }) => id === route.id);
 const getCurrentRoute = (state: ReducerState) =>
   state.stacks.slice(state.stacks.length - 1)[0];
 const getStacks = (state: ReducerState) => state.stacks;
 
-const Provider = ({ initial, routes, router, renderTabs }: ProviderProps) => {
+const prepareRoutes = (routes: LoseObjectType): LoseObjectType =>
+  Object.keys(routes).reduce((acc, key) => {
+    return { ...acc, [key]: { ...routes[key], name: key } };
+  }, {});
+
+const Provider = ({ initial, routes: _routes, router, renderTabs }: Props) => {
+  const routes = prepareRoutes(_routes);
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const createRoute = useCallback(
-    params => mergeWithDefaults(routes[params.name], params),
+  const replace = useCallback(
+    (name: string, options?: RouteOptionsType) => {
+      dispatch({
+        type: 'replace',
+        route: createRoute(routes[name], {
+          ...options,
+          mode: 'replace',
+          animated: false,
+        }),
+      });
+    },
     [routes]
   );
 
-  const replace = useCallback(
-    (name: string, data = {}) => {
-      dispatch({
-        type: "replace",
-        route: createRoute({ ...data, name, mode: "replace", animated: false })
-      });
-    },
-    [createRoute]
-  );
-
   const push = useCallback(
-    (name: string, data = {}) => {
-      if (data.mode === "replace") {
-        return replace(name, data);
+    (name: string, options?: RouteOptionsType) => {
+      if (options && options.mode === 'replace') {
+        return replace(name, options);
       }
 
-      return dispatch({ type: "push", route: createRoute({ ...data, name }) });
+      return dispatch({
+        type: 'push',
+        route: createRoute(routes[name], options),
+      });
     },
-    [createRoute, replace]
+    [replace, routes]
   );
 
   const pop = useCallback(() => {
-    dispatch({ type: "pop" });
+    dispatch({ type: 'pop' });
   }, []);
 
   const reset = useCallback(() => {
+    const name = initial;
     dispatch({
-      type: "reset",
-      route: createRoute({ name: initial, mode: "replace", animated: false })
+      type: 'reset',
+      route: createRoute(routes[name], {
+        mode: 'replace',
+        animated: false,
+      }),
     });
-  }, [createRoute, initial]);
+  }, [initial, routes]);
 
   useEffect(() => {
-    push(initial, { mode: "initial", animated: false });
-  }, []); // eslint-disable-line
+    push(initial, { mode: 'initial', animated: false });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const current = getCurrentRoute(state);
   const stacks = getStacks(state);
@@ -181,11 +187,11 @@ const Provider = ({ initial, routes, router, renderTabs }: ProviderProps) => {
       ...Object.keys(router).reduce((acc, key) => {
         const { name, ...options } = router[key];
         return {
-          [key]: props =>
+          [key]: (props: object) =>
             push(name, { ...options, props: { ...options.props, ...props } }),
-          ...acc
+          ...acc,
         };
-      }, {})
+      }, {}),
     }),
     [pop, push, replace, reset, router]
   );
@@ -193,15 +199,7 @@ const Provider = ({ initial, routes, router, renderTabs }: ProviderProps) => {
   return (
     <NavigationContext.Provider value={context}>
       {stacks.map((stack, index) => {
-        const {
-          Component,
-          mode,
-          statusBar,
-          props,
-          id,
-          animated,
-          header
-        } = stack;
+        const { Component, mode, statusBar, props, id, animated } = stack;
 
         if (stacks.length - index > 3) {
           return null;
@@ -216,14 +214,14 @@ const Provider = ({ initial, routes, router, renderTabs }: ProviderProps) => {
             key={id}
             value={{
               screen: stack,
-              showBackButton: index !== 0
+              showBackButton: index !== 0,
             }}
           >
             {showStatusBar && <StatusBar {...statusBar} />}
             <ScreenTransition
               mounted={mounted}
               onUnmount={() => {
-                dispatch({ type: "pop_done", route: stack });
+                dispatch({ type: 'pop_done', route: stack });
               }}
               pop={pop}
               mode={mode}

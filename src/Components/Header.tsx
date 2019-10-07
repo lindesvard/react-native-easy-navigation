@@ -1,45 +1,59 @@
-import React from "react";
-import { View, TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import React from 'react';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
 
-import { HEADER_HEIGHT, SAFE_AREA_TOP } from "../constants";
-import useRouter from "../hooks/useRouter";
-import useScreen from "../hooks/useScreen";
-import { isHalfPanel, hasYTransition } from "../helpers";
-import Title from "./Title";
+import { HEADER_HEIGHT, SAFE_AREA_TOP } from '../constants';
+import useRouter from '../hooks/useRouter';
+import useScreen from '../hooks/useScreen';
+import { isHalfPanel, hasYTransition } from '../helpers';
+import Title from './Title';
+import Icon from './Icon';
 
 interface HeaderHalfPanelProps {
   title: string;
-  pop: Function;
+  pop: () => void;
 }
 
-interface HeaderProps {
+interface Props {
   title: string;
 }
 
+const styles = StyleSheet.create({
+  container: {
+    height: HEADER_HEIGHT + SAFE_AREA_TOP,
+  },
+  inner: {
+    marginTop: SAFE_AREA_TOP,
+    height: HEADER_HEIGHT,
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+  },
+  containerHalfPanel: {
+    height: 60,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+    paddingHorizontal: 20,
+  },
+  closeButton: { zIndex: 2, marginLeft: 'auto' },
+  backButton: { zIndex: 2 },
+});
+
 const HeaderHalfPanel = ({ title, pop }: HeaderHalfPanelProps) => {
   return (
-    <View
-      style={{
-        height: 26,
-        flexDirection: "row",
-        alignItems: "center",
-        marginBottom: 20
-      }}
-    >
+    <View style={styles.containerHalfPanel}>
       <Title color="black">{title}</Title>
       <TouchableOpacity
         onPress={pop}
-        style={{ zIndex: 2, marginLeft: "auto" }}
+        style={styles.closeButton}
         hitSlop={{ top: 10, right: 10, bottom: 10, left: 10 }}
       >
-        <Ionicons name="ios-close" size={26} color="black" />
+        <Icon name="close" size={26} color="black" />
       </TouchableOpacity>
     </View>
   );
 };
 
-const Header = ({ title }: HeaderProps) => {
+const Header = ({ title }: Props) => {
   const { screen, showBackButton } = useScreen();
   const { pop } = useRouter();
   const { header, mode } = screen;
@@ -56,27 +70,22 @@ const Header = ({ title }: HeaderProps) => {
 
   return (
     <View
-      style={{
-        height: HEADER_HEIGHT + SAFE_AREA_TOP,
-        backgroundColor
-      }}
+      style={[
+        styles.container,
+        {
+          backgroundColor,
+        },
+      ]}
     >
-      <View
-        style={{
-          marginTop: SAFE_AREA_TOP,
-          height: HEADER_HEIGHT,
-          justifyContent: "center",
-          paddingHorizontal: 20
-        }}
-      >
+      <View style={styles.inner}>
         {showBackButton && (
           <TouchableOpacity
             onPress={pop}
-            style={{ zIndex: 2 }}
+            style={styles.backButton}
             hitSlop={{ top: 10, right: 10, bottom: 10, left: 10 }}
           >
-            <Ionicons
-              name={`ios-${hasYTransition(mode) ? "close" : "arrow-back"}`}
+            <Icon
+              name={hasYTransition(mode) ? 'close' : 'chevron-left'}
               size={26}
               color={color}
             />

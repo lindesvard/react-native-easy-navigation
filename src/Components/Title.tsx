@@ -1,32 +1,29 @@
-import React from "react";
-import { View, Text } from "react-native";
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 
-interface TitleProps {
+type Props = {
   children: React.ReactNode;
   color: string;
-}
+};
 
-const Title = ({ children, color }: TitleProps) => (
-  <View
-    pointerEvents="none"
-    style={{
-      position: "absolute",
-      left: 0,
-      right: 0,
-      alignItems: "center",
-      justifyContent: "center"
-    }}
-  >
-    <Text
-      style={{
-        color,
-        textAlign: "center",
-        fontSize: 18,
-        fontWeight: "500"
-      }}
-    >
-      {children}
-    </Text>
+const styles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  title: {
+    textAlign: 'center',
+    fontSize: 18,
+    fontWeight: '500',
+  },
+});
+
+const Title = ({ children, color }: Props) => (
+  <View pointerEvents="none" style={styles.container}>
+    <Text style={[styles.title, { color }]}>{children}</Text>
   </View>
 );
 

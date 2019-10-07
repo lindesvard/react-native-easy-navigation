@@ -1,14 +1,17 @@
-import { useContext, useMemo } from "react";
-import { ScreenContext } from "../ScreenProvider";
+import { useContext, useMemo } from 'react';
+import { ScreenContext } from '../ScreenProvider';
+import { RouteType } from '../types';
 
-interface ScreenContextReturn {
-  screen: { name: string };
+type ScreenContextReturn = {
+  screen: RouteType;
   showBackButton: boolean;
-}
+};
 
 const useScreen = (): ScreenContextReturn => {
   const screen = useContext(ScreenContext) as ScreenContextReturn;
-  return useMemo(() => screen, []); // eslint-disable-line
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  return useMemo(() => screen, []);
 };
 
 export default useScreen;
