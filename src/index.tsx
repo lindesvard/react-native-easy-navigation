@@ -5,6 +5,7 @@ export { default as NavigationProvider } from './NavigationProvider';
 export { default as ScreenTransition } from './ScreenTransition';
 export { default as Screen } from './Components/Screen';
 export { default as Header } from './Components/Header';
+export { default as BottomSheet } from './Components/BottomSheet';
 export { default as Tabs } from './Tabs';
 export * from './constants';
 export * from './types';

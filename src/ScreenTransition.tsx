@@ -2,13 +2,11 @@ import React, { useMemo } from 'react';
 import { StyleSheet, Dimensions, TouchableWithoutFeedback } from 'react-native';
 import Animated, { Easing } from 'react-native-reanimated';
 import { timing } from 'react-native-redash';
-import BottomSheet from './Components/BottomSheet';
 import {
   isDrawer,
   hasYTransition,
   hasXTransition,
   getModeBackground,
-  isHalfPanel,
 } from './helpers';
 import { TRANSITION_DURATION } from './constants';
 import { ModeType } from './types';
@@ -38,7 +36,7 @@ type Props = {
 
 const { width, height } = Dimensions.get('window');
 
-const getXOutputRange = (mode: string) => {
+const getXOutputRange = (mode: ModeType) => {
   switch (mode) {
     case 'drawer':
       return [-width, 0];
@@ -47,7 +45,7 @@ const getXOutputRange = (mode: string) => {
   }
 };
 
-const getContainerWidth = (mode: string) => {
+const getContainerWidth = (mode: ModeType) => {
   switch (mode) {
     case 'drawer':
       return width - 100;
@@ -136,16 +134,7 @@ const Transition = ({
           },
         ]}
       >
-        {isHalfPanel(mode) ? (
-          <BottomSheet
-            distanceFromTop={150}
-            onClose={pop}
-            scenes={[{ key: 'only', children }]}
-            position={0}
-          />
-        ) : (
-          children
-        )}
+        {children}
       </Animated.View>
     </Animated.View>
   );

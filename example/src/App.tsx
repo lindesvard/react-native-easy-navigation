@@ -7,6 +7,7 @@ import {
   Tabs,
   RouterType,
   RouteType,
+  ModeType,
 } from 'react-native-easy-navigation';
 
 import LeftDrawer from './screens/LeftDrawer';
@@ -17,18 +18,32 @@ import ExampleModal from './screens/ExampleModal';
 import ExampleHalfPanel from './screens/ExampleHalfPanel';
 import ExampleStack from './screens/ExampleStack';
 
+/* 
+mode
+   - left-to-right
+   - right-to-left
+   - modal
+   - modal-reverse
+   - half-panel
+   - none
+*/
+
 const routes = {
   Home: {
     Component: Home,
-    header: {
-      backgroundColor: '#000',
-      color: 'white',
-    },
   },
-  Gallery: { Component: Gallery },
-  Profile: { Component: Profile },
-  ExampleModal: { Component: ExampleModal },
-  ExampleHalfPanel: { Component: ExampleHalfPanel },
+  Gallery: {
+    Component: Gallery,
+  },
+  Profile: {
+    Component: Profile,
+  },
+  ExampleModal: {
+    Component: ExampleModal,
+  },
+  ExampleHalfPanel: {
+    Component: ExampleHalfPanel,
+  },
   ExampleStack: {
     Component: ExampleStack,
   },
@@ -44,6 +59,10 @@ const router = {
       backgroundColor: 'yellow',
       color: '#000',
     },
+  },
+  navigateToModal: {
+    name: 'ExampleModal',
+    mode: 'modal' as ModeType,
   },
 };
 

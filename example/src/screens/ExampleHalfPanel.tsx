@@ -1,31 +1,48 @@
 import React, { memo } from 'react';
-import { Text, View, Button, TextInput, StyleSheet } from 'react-native';
-import { useRouter, Screen } from 'react-native-easy-navigation';
+import { Text, View, StyleSheet } from 'react-native';
+import { BottomSheet } from 'react-native-easy-navigation';
 
 const styles = StyleSheet.create({
-  box: {
-    height: 100,
-    width: '100%',
-    backgroundColor: 'red',
-    marginBottom: 10,
+  container: {
+    padding: 10,
   },
-  input: { height: 50, width: 300, borderWidth: 1 },
+  box: {
+    height: 50,
+    width: '100%',
+    backgroundColor: '#f2f2f2',
+    marginBottom: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
-const ExampleHalfPanel = () => {
-  const { navigateToModal, pop } = useRouter();
+const Wizard = ({ number }: { number: number }) => (
+  <View style={styles.container}>
+    {[...Array(number)].map((_, index) => (
+      <View style={styles.box} key={String(index)}>
+        <Text>Hello {index}</Text>
+      </View>
+    ))}
+  </View>
+);
 
-  return (
-    <Screen title="Half panel">
-      <Text>This is a half panel</Text>
-      {[...Array(8)].map((_, index) => (
-        <View key={index} style={styles.box} />
-      ))}
-      <TextInput style={styles.input} />
-      <Button onPress={navigateToModal} title="Go to modal" />
-      <Button title="Close" onPress={pop} />
-    </Screen>
-  );
+const getTitle = ({ index }: { index: number }): string | undefined => {
+  switch (index) {
+    case 0:
+      return 'Första';
+    case 1:
+      return 'Andra';
+    case 2:
+      return 'Tredje';
+    default:
+      return;
+  }
+};
+
+const scenes = [() => <Wizard number={1} />, () => <Wizard number={5} />];
+
+const ExampleHalfPanel = () => {
+  return <BottomSheet title={getTitle} scenes={scenes} />;
 };
 
 export default memo(ExampleHalfPanel);

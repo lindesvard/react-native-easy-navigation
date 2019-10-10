@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, memo, useCallback } from 'react';
+import React, { useEffect, useMemo, memo, useCallback, useState } from 'react';
 import {
   View,
   Keyboard,
@@ -10,6 +10,10 @@ import {
 import Animated, { Easing } from 'react-native-reanimated';
 import Overlay from './Overlay';
 import { SAFE_AREA_BOTTOM, isAndroid } from '../../constants';
+import useRouter from '../../hooks/useRouter';
+import DefaultHeader from './Header';
+
+const HEADER_HEIGHT = 60;
 
 const styles = StyleSheet.create({
   container: {
@@ -19,6 +23,13 @@ const styles = StyleSheet.create({
     bottom: 0,
     backgroundColor: '#fff',
     position: 'absolute',
+    width: '100%',
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+  },
+  header: {
+    height: HEADER_HEIGHT,
+    backgroundColor: '#fff',
     width: '100%',
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
@@ -44,18 +55,20 @@ const isKeyboardVisible = (event: any) =>
   screen.height - event.endCoordinates.height === event.endCoordinates.screenY;
 
 type Props = {
-  distanceFromTop: number;
-  scenes: { key: string; children: React.ReactNode }[];
-  onClose: () => void;
-  position: number;
+  scenes: React.ElementType[];
+  Header?: React.ElementType | null;
+  distanceFromTop?: number;
+  title?: string | ((options: { index: number }) => string | undefined | null);
 };
 
 const Modal = ({
   distanceFromTop = 100,
   scenes = [],
-  onClose = () => {},
-  position = 0,
+  Header: CustomHeader = null,
+  title = '',
 }: Props) => {
+  const [position, setPosition] = useState(0);
+  const { pop } = useRouter();
   const { keyboard, keyboardHeight, heights } = useMemo(
     () => ({
       heights: scenes.map(() => new Animated.Value(0)),
@@ -90,8 +103,8 @@ const Modal = ({
   });
 
   const close = useCallback(() => {
-    onClose && onClose();
-  }, [onClose]);
+    pop();
+  }, [pop]);
 
   useEffect(() => {
     const runKeyboardAnimation = (toValue: number) =>
@@ -148,9 +161,31 @@ const Modal = ({
       layout: { height },
     },
   }: LayoutChangeEvent) => {
-    const sceneHeight = height + Math.max(SAFE_AREA_BOTTOM, 20);
+    const sceneHeight =
+      (Header ? HEADER_HEIGHT : 0) + height + Math.max(SAFE_AREA_BOTTOM, 20);
 
     heights[index].setValue(sceneHeight as Animated.Adaptable<any>);
+  };
+
+  const isLast = position + 1 >= scenes.length;
+  const hasNext = position < scenes.length;
+  const hasPrev = position !== 0;
+  const Header = CustomHeader || DefaultHeader;
+
+  const next = () => {
+    if (isLast) {
+      close();
+    } else {
+      setPosition(prev => prev + 1);
+    }
+  };
+
+  const prev = () => {
+    if (!hasPrev) {
+      close();
+    } else {
+      setPosition(prev => prev - 1);
+    }
   };
 
   return (
@@ -174,9 +209,9 @@ const Modal = ({
           },
         ]}
       >
-        {scenes.map(({ key, children }, index) => (
+        {scenes.map((Scene, index) => (
           <Animated.View
-            key={key}
+            key={index}
             style={[
               styles.scene,
               position === index && styles.sceneAbsolute,
@@ -185,8 +220,18 @@ const Modal = ({
               },
             ]}
           >
-            <ScrollView>
-              <View onLayout={handleLayout(index)}>{children}</View>
+            <ScrollView stickyHeaderIndices={CustomHeader || title ? [0] : []}>
+              <View style={styles.header}>
+                <Header
+                  onPrev={hasPrev ? prev : undefined}
+                  onNext={hasNext ? next : undefined}
+                  onClose={isLast ? close : undefined}
+                  title={typeof title === 'function' ? title({ index }) : title}
+                />
+              </View>
+              <View onLayout={handleLayout(index)}>
+                <Scene />
+              </View>
             </ScrollView>
           </Animated.View>
         ))}
