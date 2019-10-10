@@ -16,7 +16,8 @@
     "lint": "eslint --ext .js,.ts,.tsx .",
     "release": "release-it",
     "example": "yarn --cwd example",
-    "bootstrap": "yarn example && yarn"
+    "bootstrap": "yarn example && yarn",
+    "build": "bob build"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
@@ -40,6 +41,7 @@
   "homepage": "https://github.com/lindesvard/react-native-easy-navigation#readme",
   "devDependencies": {
     "@commitlint/config-conventional": "^8.0.0",
+    "@react-native-community/bob": "^0.7.0",
     "@release-it/conventional-changelog": "^1.1.0",
     "@types/expo": "^32.0.13",
     "@types/react": "^16.8.20",
@@ -79,6 +81,15 @@
     "modulePathIgnorePatterns": [
       "<rootDir>/example/node_modules",
       "<rootDir>/lib/"
+    ]
+  },
+  "@react-native-community/bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      "commonjs",
+      "module",
+      "typescript"
     ]
   }
 }
