@@ -40,73 +40,125 @@ Follow the instructions how to install `react-native-gesture-handler` and `react
 ## Usage
 
 ```jsx
+import React from 'react';
+import { View, Text, Button } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
+import {
+  Screen,
+  NavigationProvider,
+  Tabs,
+  useRouter,
+} from 'react-native-easy-navigation';
+
 const Home = () => {
-  const router = useRouter()
+  const router = useRouter();
   return (
     <Screen title="Home">
-      <Button onPress={() => router.navigateToArticle({ title: 'Article 1', id: 1 })} title="Go to Article 1"/>
-      <Button onPress={() => router.navigateToArticle({ title: 'Article 2', id: 2 })} title="Go to Article 2"/>
+      <Button
+        onPress={() => router.navigateToArticle({ title: 'Article 1', id: 1 })}
+        title="Go to Article 1"
+      />
+      <Button
+        onPress={() => router.navigateToArticle({ title: 'Article 2', id: 2 })}
+        title="Go to Article 2"
+      />
     </Screen>
-  )
-}
+  );
+};
 
 const Profile = () => {
-  const router = useRouter()
+  const router = useRouter();
   return (
     <Screen title="Profile">
-      <Button onPress={() => router.navigateToMyModal({ text: 'Modal: This is a prop passed to the Modal screen' })} title="Open modal"/>
-      <Button onPress={() => router.navigateToMyHalfPanel({ text: 'HalfPanel: This is a prop passed to the Modal screen' })} title="Open half panel"/>
+      <Button
+        onPress={() =>
+          router.navigateToMyModal({
+            text: 'Modal: This is a prop passed to the Modal screen',
+          })
+        }
+        title="Open modal"
+      />
+      <Button
+        onPress={() =>
+          router.navigateToMyHalfPanel({
+            text: 'HalfPanel: This is a prop passed to the Modal screen',
+          })
+        }
+        title="Open half panel"
+      />
     </Screen>
-  )
-}
+  );
+};
 
 const Article = ({ title, id }) => {
-  const router = useRouter()
+  const router = useRouter();
   return (
     <Screen title={title || 'Article'}>
       <Text>Fetch article with ID = {id}</Text>
-      <Button onPress={router.pop} title="Custom go back button"/>
-      <Button onPress={() => router.replace('Article', { props: { title: 'Article 3 - Replaced', id: 3 } })} title="Replace with Article 3"/>
-      <Button onPress={() => router.push('Article', { props: { title: 'Article 4 - Push', id: 3 } })} title="Push with Article 4"/>
-      <Button onPress={() => router.push('Article', { props: { title: 'Article 4 - Push', id: 3 } })} title="Push with Article 4"/>
+      <Button onPress={router.pop} title="Custom go back button" />
+      <Button
+        onPress={() =>
+          router.replace('Article', {
+            props: { title: 'Article 3 - Replaced', id: 3 },
+          })
+        }
+        title="Replace with Article 3"
+      />
+      <Button
+        onPress={() =>
+          router.push('Article', {
+            props: { title: 'Article 4 - Push', id: 3 },
+          })
+        }
+        title="Push with Article 4"
+      />
+      <Button
+        onPress={() =>
+          router.push('Article', {
+            props: { title: 'Article 4 - Push', id: 3 },
+          })
+        }
+        title="Push with Article 4"
+      />
     </Screen>
-  )
-}
+  );
+};
 
 const Modal = ({ text, type }) => {
   return (
     <Screen title={type}>
       <Text>{text}</Text>
     </Screen>
-  )
-}
+  );
+};
 
 const Drawer = ({ text, type }) => {
   return (
     <View style={{ flex: 1 }}>
       <Text>My drawer</Text>
     </View>
-  )
-}
+  );
+};
 
 const App = () => {
   return (
-    <NavigationProvider 
+    <NavigationProvider
       initial="Home"
       routes={{
-        Home: { Component: Home },
+        Home: { Component: Home },
         Profile: {
-          Component: Profile, 
+          Component: Profile,
           statusBar: {
             barStyle: 'light-content',
           },
           header: {
             backgroundColor: '#000',
-            color: '#fff'
-          }
+            color: '#fff',
+          },
         },
-        Article: { Component: Article },
-        Drawer: { Component: Drawer },
+        Article: { Component: Article },
+        Drawer: { Component: Drawer },
+        Modal: { Component: Modal },
       }}
       router={{
         // Creates helper functions that we can get from `useRouter`-hook
@@ -115,58 +167,60 @@ const App = () => {
         navigateToHome: { name: 'Home' },
         navigateToProfile: { name: 'Profile' },
         navigateToArticle: { name: 'Article' },
-        navigateToMyModal: { name: 'Modal' }
-        navigateToMyHalfPanel: { name: 'Modal' },
-        openDrawer: { name: 'Drawer', mode: 'drawer' },
+        navigateToMyModal: { name: 'Modal' },
+        navigateToMyHalfPanel: { name: 'Modal' },
+        openDrawer: { name: 'Drawer', mode: 'drawer' },
       }}
-      renderTab={(route) => {
+      renderTab={route => {
         // Will be called for each route
         // If current route is Article we do not want to display the tabs
         if (route.name === 'Article') {
-          return null
+          return null;
         }
 
         // You can also create an array of all your tab items and then just map them.
         // Tabs and Tabs.Item is just some helper components,
         // You can easily create your own and then navigate to what ever you want
-        return <Tabs>
-          <Tabs.Item 
-            route="Home" 
-            icon={active => (
-              <Ionicons
-                name={icon}
-                size={26}
-                color={active ? "#007aff" : "black"}
-              />
-            )}
-            label={active => (
-              <Text style={{ color: active ? "#007aff" : "black" }}>
-                Home
-              </Text>
-            )}
-            badge={() => <Tabs.Badge number={3} />} 
-          />
-          <Tabs.Item 
-            route="Home" 
-            icon={active => (
-              <Ionicons
-                name={icon}
-                size={26}
-                color={active ? "#007aff" : "black"}
-              />
-            )}
-            label={active => (
-              <Text style={{ color: active ? "#007aff" : "black" }}>
-                Home
-              </Text>
-            )}
-            badge={() => <Tabs.Badge number={3} />} 
-          />
-        </Tabs>
+        return (
+          <Tabs>
+            <Tabs.Item
+              route="Home"
+              icon={active => (
+                <FontAwesome
+                  name="home"
+                  size={26}
+                  color={active ? '#007aff' : 'black'}
+                />
+              )}
+              label={active => (
+                <Text style={{ color: active ? '#007aff' : 'black' }}>
+                  Home
+                </Text>
+              )}
+              badge={() => <Tabs.Badge number={3} />}
+            />
+            <Tabs.Item
+              route="Profile"
+              icon={active => (
+                <FontAwesome
+                  name="user"
+                  size={26}
+                  color={active ? '#007aff' : 'black'}
+                />
+              )}
+              label={active => (
+                <Text style={{ color: active ? '#007aff' : 'black' }}>
+                  Home
+                </Text>
+              )}
+              badge={() => <Tabs.Badge number={3} />}
+            />
+          </Tabs>
+        );
       }}
     />
-  )
-}
+  );
+};
 ```
 
 ## Components
