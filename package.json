@@ -14,7 +14,7 @@
     "test": "jest",
     "typescript": "tsc --noEmit",
     "lint": "eslint --ext .js,.ts,.tsx .",
-    "release": "release-it",
+    "release": "yarn build && release-it",
     "example": "yarn --cwd example",
     "bootstrap": "yarn example && yarn",
     "build": "bob build"
