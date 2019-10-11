@@ -4,7 +4,7 @@ Simple and fast navigation for react-native
 
 **Still under development**
 
-> Note: Needs `react-native-reanimated` and `react-native-gesture-handler`!
+> Note: Needs `react-native-redash`, `react-native-reanimated`, `react-native-gesture-handler`!
 
 ## Table of Contents
 
@@ -244,7 +244,7 @@ const App = () => {
       statusBar: {
         barStyle: 'light-content|dark-content'
       },
-      mode: 'replace|push|drawer|overlay',
+      mode: 'replace|push|drawer|overlay|half-panel|modal',
       // ignore header if you don't wrap your views with the <Screen> component
       header: {
         backgroundColor: '#000',
