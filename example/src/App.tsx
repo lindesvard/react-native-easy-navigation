@@ -18,16 +18,6 @@ import ExampleModal from './screens/ExampleModal';
 import ExampleHalfPanel from './screens/ExampleHalfPanel';
 import ExampleStack from './screens/ExampleStack';
 
-/* 
-mode
-   - left-to-right
-   - right-to-left
-   - modal
-   - modal-reverse
-   - half-panel
-   - none
-*/
-
 const routes = {
   Home: {
     Component: Home,
@@ -37,32 +27,34 @@ const routes = {
   },
   Profile: {
     Component: Profile,
+    header: {
+      backgroundColor: 'yellow',
+      color: '#000',
+    },
   },
   ExampleModal: {
     Component: ExampleModal,
+    mode: 'modal' as ModeType,
   },
   ExampleHalfPanel: {
     Component: ExampleHalfPanel,
+    mode: 'half-panel' as ModeType,
   },
   ExampleStack: {
     Component: ExampleStack,
   },
   LeftDrawer: {
     Component: LeftDrawer,
+    mode: 'drawer' as ModeType,
   },
 };
 
 const router = {
   navigateToProfile: {
     name: 'Profile',
-    header: {
-      backgroundColor: 'yellow',
-      color: '#000',
-    },
   },
   navigateToModal: {
     name: 'ExampleModal',
-    mode: 'modal' as ModeType,
   },
 };
 

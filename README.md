@@ -1,5 +1,8 @@
 # react-native-easy-navigation
+
 Simple and fast navigation for react-native
+
+**Still under development**
 
 > Note: Needs `react-native-reanimated` and `react-native-gesture-handler`!
 
@@ -258,14 +261,14 @@ const App = () => {
     if (route.name !== 'Home') {
       return null
     }
-    
+
     return (
       <Tabs>
-        <Tabs.Item 
+        <Tabs.Item
           route="Home"
           icon={active => (<Icon name="home"/>)}
           label={active => <Text>Home</Text>)}
-          badge={() => <Tabs.Badge number={3} />} 
+          badge={() => <Tabs.Badge number={3} />}
         />
       </Tabs>
     )
@@ -273,16 +276,12 @@ const App = () => {
 >
 ```
 
-### Screen 
+### Screen
 
 You can wrap all your main views with the `Screen` component. This component will add a header with a title and a back button (if you are deeper then the first screen).
 
 ```jsx
-const Home = () => (
-  <Screen title="Home">
-    {/* rest of your view */}
-  </Screen>
-)
+const Home = () => <Screen title="Home">{/* rest of your view */}</Screen>;
 ```
 
 ## Hooks
@@ -293,25 +292,21 @@ This is help full to get information from the screen you are at.
 
 ```jsx
 const Home = () => {
-  const { 
-    showBackButton, 
+  const {
+    showBackButton,
     screen: {
       id,
       name,
       mode,
       animated,
       statusBar: { barStyle },
-      header: {
-        backgroundColor,
-        color,
-      } 
-    }
-  } = useScreen()
+      header: { backgroundColor, color },
+    },
+  } = useScreen();
 
-  return null
-}
+  return null;
+};
 ```
-
 
 ### useRouter
 
@@ -319,32 +314,31 @@ If you want to navigate this is the hook!
 
 ```jsx
 const Home = () => {
-  const { 
+  const {
     push,
     pop,
     replace,
     reset,
     // and all the shortcuts you defined in <NavigationProvider router={} />
     navigateToArticle,
-  } = useRouter()
+  } = useRouter();
 
   return (
     <>
-      <Button 
-        title="Push" 
-        onPress={() => push('Article', { 
-          props: { id: 1 }, 
-          mode: '', 
-          statusBar: {}, 
-          header: {}, 
-          animated: true 
-        })} 
+      <Button
+        title="Push"
+        onPress={() =>
+          push('Article', {
+            props: { id: 1 },
+            mode: '',
+            statusBar: {},
+            header: {},
+            animated: true,
+          })
+        }
       />
-      <Button 
-        title="Shortcut" 
-        onPress={() => navigateToArticle({ id: 1 })}
-      />
+      <Button title="Shortcut" onPress={() => navigateToArticle({ id: 1 })} />
     </>
-  )
-}
+  );
+};
 ```
